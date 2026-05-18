@@ -35,6 +35,12 @@ from your actual data.
 5. Save meeting notes as Google Docs to that folder
 6. Watch the RAID log appear automatically in Google Sheets
 
+## Demo Video
+
+Watch the full demo here: https://youtu.be/r_uJW6CsgxI
+
+[![AI PM Assistant Demo](https://img.youtube.com/vi/r_uJW6CsgxI/0.jpg)](https://youtu.be/r_uJW6CsgxI)
+
 ## Built By
 
 Shivoy Malhotra  
