@@ -1,0 +1,1591 @@
+{
+  "name": "AI PM Tool Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "YOUR_API_KEY"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.claudeBody) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1216,
+        192
+      ],
+      "id": "3004ae3c-2877-40ff-a59d-3a4e75435028",
+      "name": "HTTP Request",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "let rawText = items[0].json.content[0].text;\nrawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();\n\nlet parsed;\ntry {\n  parsed = JSON.parse(rawText);\n} catch(e) {\n  return [{ json: { error: 'Parse failed', raw: rawText } }];\n}\n\nif (!Array.isArray(parsed)) {\n  return [{ json: { error: 'Not an array', raw: rawText } }];\n}\n\nreturn parsed.map(item => ({ json: item }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -832,
+        192
+      ],
+      "id": "22fb92c7-5272-4bf7-bccf-7ef3ad6dd8a8",
+      "name": "Code in JavaScript",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -624,
+        192
+      ],
+      "id": "1fad9f50-9e6b-436a-ad83-fc4b48beb6d9",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        400
+      ],
+      "id": "85a5b9f1-6bd1-483c-a871-5a8e7486cce5",
+      "placeholder": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1032ROvJLdCi2UMP7ftnzFkw7AR7B95rNUTwXoOE5UqE",
+          "mode": "list",
+          "cachedResultName": "AI PM Tool — Outputs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1032ROvJLdCi2UMP7ftnzFkw7AR7B95rNUTwXoOE5UqE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "RAID Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1032ROvJLdCi2UMP7ftnzFkw7AR7B95rNUTwXoOE5UqE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ new Date().toLocaleDateString() }}",
+            "Meeting Name": "={{ $('Code in JavaScript1').item.json.meetingName }}",
+            "Type": "={{ $json.type }}",
+            "Description": "={{ $json.description }}",
+            "Owner": "={{ $json.owner }}",
+            "Due Date": "={{ $json.due_date }}",
+            "Priority ": "={{ $json.priority }}",
+            "Status": "Open"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Meeting Name",
+              "displayName": "Meeting Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Owner",
+              "displayName": "Owner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Due Date",
+              "displayName": "Due Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority ",
+              "displayName": "Priority ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -416,
+        96
+      ],
+      "id": "e488d8b3-c1f2-4b9b-b53e-d3ecfc5ba4b3",
+      "name": "Append row in sheet"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\n\nconst meetingNotes = data.meetingNotes || 'No notes found';\nconst meetingName = $('Google Drive Trigger').first().json.name || 'Meeting from Drive';\nconst meetingDate = new Date().toLocaleDateString();\n\nreturn [{\n  json: {\n    meetingName: meetingName,\n    claudeBody: {\n      model: 'claude-haiku-4-5',\n      max_tokens: 1000,\n      system: `You are a project management assistant. Read the meeting notes provided and extract every Risk, Action, Issue, and Decision. Return ONLY a valid JSON array. Each item must have exactly these fields: type (use only Risk or Action or Issue or Decision), description, owner, due_date, priority (use only High or Medium or Low). If a field is unknown write Unknown. Return nothing else. No explanation. No preamble. Just the array. Do not wrap your response in markdown code blocks. Return raw JSON only.`,\n      messages: [{\n        role: 'user',\n        content: 'Meeting: ' + meetingName + ' on ' + meetingDate + '. Notes: ' + meetingNotes\n      }]\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1456,
+        192
+      ],
+      "id": "0b327743-6347-4a8e-a96f-6702626b332f",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "YOUR_API_KEY"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.claudeBody) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1552,
+        816
+      ],
+      "id": "b748608c-3c56-40b0-894a-8c931a921cb8",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const text = items[0].json.content[0].text;\n  return [{ json: { executiveUpdate: text } }];\n} catch(e) {\n  return [{ json: { executiveUpdate: 'Error: ' + e.message } }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1168,
+        816
+      ],
+      "id": "3cc7ee5e-0d1f-45fa-b989-55b2bca56a2d",
+      "name": "Code in JavaScript2",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $input.all();\nconst data = allItems[0].json;\n\n// Debug — log all keys so we can see exact field names\nconst keys = Object.keys(data);\n\n// Find each field by searching for any part of the key\nconst findField = (searchTerm) => {\n  const key = keys.find(k => k.toLowerCase().includes(searchTerm.toLowerCase()));\n  return key ? data[key] : 'Unknown';\n};\n\nconst projectName = findField('project name');\nconst status = findField('overall status');\nconst milestones = findField('milestone');\nconst topRisk = findField('top risk');\nconst nextSteps = findField('next step');\nconst audience = findField('update for');\n\nreturn [{\n  json: {\n    projectName: projectName,\n    status: status,\n    milestones: milestones,\n    topRisk: topRisk,\n    nextSteps: nextSteps,\n    audience: audience,\n    claudeBody: {\n      model: 'claude-sonnet-4-5-20250929',\n      max_tokens: 1000,\n      system: `You are a senior program manager writing a weekly executive status update.\nUse the inputs to write a concise professional update of no more than 150 words.\nStructure it exactly like this:\n1. Status: [RED/AMBER/GREEN] and one sentence summary.\n2. Progress: what was completed this week.\n3. Risk: the top risk and what is being done about it.\n4. Next Steps: what happens next week.\nTone: direct, formal, no filler words.\nWrite in short paragraphs. Do not use bullet points.\nDo not wrap response in markdown. Return plain text only.`,\n      messages: [{\n        role: 'user',\n        content: 'Project: ' + projectName +\n          '. Overall status: ' + status +\n          '. Milestones completed this week: ' + milestones +\n          '. Top risk: ' + topRisk +\n          '. Next steps: ' + nextSteps +\n          '. This update is for: ' + audience\n      }]\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1792,
+        816
+      ],
+      "id": "edc2073c-5b06-4ec4-8570-11166e7364ce",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1032ROvJLdCi2UMP7ftnzFkw7AR7B95rNUTwXoOE5UqE",
+          "mode": "list",
+          "cachedResultName": "AI PM Tool — Outputs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1032ROvJLdCi2UMP7ftnzFkw7AR7B95rNUTwXoOE5UqE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1557909610,
+          "mode": "list",
+          "cachedResultName": "Status Updates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1032ROvJLdCi2UMP7ftnzFkw7AR7B95rNUTwXoOE5UqE/edit#gid=1557909610"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ new Date().toLocaleDateString() }}",
+            "Project Name": "={{ $('Code in JavaScript3').item.json.projectName }}",
+            "Status": "={{ $('Code in JavaScript3').item.json.status }}",
+            "Milestone": "={{ $('Code in JavaScript3').item.json.milestones }}",
+            "Top Risk": "={{ $('Code in JavaScript3').item.json.topRisk }}",
+            "Next Steps": "={{ $('Code in JavaScript3').item.json.nextSteps }}",
+            "Audience": "={{ $('Code in JavaScript3').item.json.audience }}",
+            "Executive Update": "={{ $json.executiveUpdate }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Project Name",
+              "displayName": "Project Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Milestone",
+              "displayName": "Milestone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Top Risk",
+              "displayName": "Top Risk",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Next Steps",
+              "displayName": "Next Steps",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Audience",
+              "displayName": "Audience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Executive Update",
+              "displayName": "Executive Update",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -752,
+        720
+      ],
+      "id": "a5951b3b-b844-4f24-ae14-8cf71f7477d8",
+      "name": "Append row in sheet1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "YOUR_API_KEY"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.claudeBody) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1504,
+        1120
+      ],
+      "id": "0486c26c-a65c-43e4-a569-75eec5bc007a",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  let rawText = items[0].json.content[0].text;\n  rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();\n\n  const parsed = JSON.parse(rawText);\n\n  if (Array.isArray(parsed) && parsed.length > 0) {\n    return parsed.map(item => ({ json: item }));\n  } else {\n    return [{ json: {\n      risk_title: 'Error',\n      description: 'Claude returned empty array',\n      severity: 'Unknown',\n      likelihood: 'Unknown',\n      suggested_mitigation: 'Unknown'\n    }}];\n  }\n} catch(e) {\n  return [{ json: {\n    risk_title: 'Error',\n    description: e.message,\n    severity: 'Unknown',\n    likelihood: 'Unknown',\n    suggested_mitigation: 'Unknown'\n  }}];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        1120
+      ],
+      "id": "e04b324f-0cb3-471a-90b7-774504d62a8d",
+      "name": "Code in JavaScript4",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $input.all();\nconst data = allItems[0].json;\n\nconst keys = Object.keys(data);\n\nconst findField = (searchTerm) => {\n  const key = keys.find(k => k.toLowerCase().includes(searchTerm.toLowerCase()));\n  return key ? data[key] : 'Unknown';\n};\n\nconst projectName = findField('project name');\nconst projectDescription = findField('describe');\n\nreturn [{\n  json: {\n    projectName: projectName,\n    claudeBody: {\n      model: 'claude-sonnet-4-5-20250929',\n      max_tokens: 1000,\n      system: `You are a senior project risk manager.\nRead the project description and identify the top 5 risks.\nFor each risk return exactly these fields:\nrisk_title, description, severity (High/Medium/Low),\nlikelihood (High/Medium/Low), suggested_mitigation.\nReturn ONLY a JSON array of exactly 5 objects.\nNothing else. No explanation. No preamble.\nDo not wrap in markdown code blocks. Return raw JSON only.`,\n      messages: [{\n        role: 'user',\n        content: 'Project Name: ' + projectName + '. Description: ' + projectDescription\n      }]\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1744,
+        1120
+      ],
+      "id": "f1eca7af-bd2b-4956-8409-52687e88a0d4",
+      "name": "Code in JavaScript5"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1032ROvJLdCi2UMP7ftnzFkw7AR7B95rNUTwXoOE5UqE",
+          "mode": "list",
+          "cachedResultName": "AI PM Tool — Outputs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1032ROvJLdCi2UMP7ftnzFkw7AR7B95rNUTwXoOE5UqE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1989092654,
+          "mode": "list",
+          "cachedResultName": "Risk Register",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1032ROvJLdCi2UMP7ftnzFkw7AR7B95rNUTwXoOE5UqE/edit#gid=1989092654"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Risk Title": "={{ $json.risk_title }}",
+            "Date": "={{ new Date().toLocaleDateString() }}",
+            "Project Name": "={{ $('Code in JavaScript5').item.json.projectName }}",
+            "Description": "={{ $json.description }}",
+            "Severity ": "={{ $json.severity }}",
+            "Likelihood": "={{ $json.likelihood }}",
+            "Mitigation": "={{ $json.suggested_mitigation }}",
+            "Status": "Open"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Project Name",
+              "displayName": "Project Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Risk Title",
+              "displayName": "Risk Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Severity ",
+              "displayName": "Severity ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Likelihood",
+              "displayName": "Likelihood",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Mitigation",
+              "displayName": "Mitigation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -704,
+        1024
+      ],
+      "id": "f64dcd74-213b-4eb0-aaec-d305dd49b429",
+      "name": "Append row in sheet2"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1032ROvJLdCi2UMP7ftnzFkw7AR7B95rNUTwXoOE5UqE",
+          "mode": "list",
+          "cachedResultName": "AI PM Tool — Outputs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1032ROvJLdCi2UMP7ftnzFkw7AR7B95rNUTwXoOE5UqE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 308607890,
+          "mode": "list",
+          "cachedResultName": "AI Risk flagging response sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1032ROvJLdCi2UMP7ftnzFkw7AR7B95rNUTwXoOE5UqE/edit#gid=308607890"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1952,
+        1120
+      ],
+      "id": "1c1652ab-63db-4bee-a614-41adc541a25b",
+      "name": "Feature 3 - AI Risk Flagging"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1032ROvJLdCi2UMP7ftnzFkw7AR7B95rNUTwXoOE5UqE",
+          "mode": "list",
+          "cachedResultName": "AI PM Tool — Outputs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1032ROvJLdCi2UMP7ftnzFkw7AR7B95rNUTwXoOE5UqE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 68665585,
+          "mode": "list",
+          "cachedResultName": "Status update response sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1032ROvJLdCi2UMP7ftnzFkw7AR7B95rNUTwXoOE5UqE/edit#gid=68665585"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2000,
+        816
+      ],
+      "id": "a9039356-0629-4b74-96b6-f0071cedab78",
+      "name": "Feature 2 - Stakeholder Status update"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -912,
+        1120
+      ],
+      "id": "b4dbe004-c2e2-44e2-9ba8-2c7dbc54a4a2",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me1",
+      "typeVersion": 1,
+      "position": [
+        -704,
+        1328
+      ],
+      "id": "916cc739-3371-4d4b-92d4-c91e8ae0bde5",
+      "placeholder": true
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1cnw2cvoJEqRNLBi1Z5l80bgqpc4fPoc7",
+          "mode": "list",
+          "cachedResultName": "Meeting Notes — AI PM Tool",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1cnw2cvoJEqRNLBi1Z5l80bgqpc4fPoc7"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2080,
+        192
+      ],
+      "id": "d00835a0-21c3-4986-9587-008e32333926",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "0qMnckuNxwgsNMZ4",
+          "name": "Google Drive account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const content = items[0].json.content || 'No content found';\nconst docName = items[0].json.documentId || 'Meeting from Drive';\n\nreturn [{\n  json: {\n    meetingNotes: content,\n    meetingName: 'Meeting from Drive',\n    meetingDate: new Date().toLocaleDateString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1664,
+        192
+      ],
+      "id": "5cb22451-faa8-4fb9-b5c2-b1d5e323d0a2",
+      "name": "Code in JavaScript6"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -1872,
+        192
+      ],
+      "id": "47b50bd3-55e6-4c32-819e-de3ea6147589",
+      "name": "Get a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "XSaUpeCHqRjgH2Go",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "65a2d5ab-92a3-47be-ace2-62de54cbf713",
+              "leftValue": "={{ $json['Priority '] }}",
+              "rightValue": "High",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -208,
+        96
+      ],
+      "id": "d05b5fdd-0350-419c-91f3-7a398e0f4d9c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "=HIGH RISK FLAGGED — {{ $('Code in JavaScript1').item.json.meetingName }} ",
+        "emailType": "text",
+        "message": "=A new High severity risk has been identified in your project.  Meeting: {{ $('Code in JavaScript1').item.json.meetingName }} Type: {{ $json.type }} Description: {{ $json.description }} Owner: {{ $json.owner }} Due Date: {{ $json.due_date }} Priority: {{ $json.priority }}  Please review and take action.  This alert was generated automatically by your AI PM Assistant.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "81df3b73-c76b-4355-b7c5-4fa7ecfcd590",
+      "name": "Send a message",
+      "webhookId": "952216ea-e25e-447e-aed0-a58796eed08d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "8oc9pQucINlL7Z2M",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "YOUR_API_KEY"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.claudeBody) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1344,
+        -384
+      ],
+      "id": "bc9f3452-f911-4ac8-a063-90ce45917fc6",
+      "name": "HTTP Request3",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "let rawText = $input.first().json.content[0].text;\nrawText = rawText.replace(/```json|```/g, '').trim();\n\nlet parsed;\ntry {\n  parsed = JSON.parse(rawText);\n} catch (e) {\n  return [{ json: { error: 'Parse failed', raw: rawText } }];\n}\n\nif (!Array.isArray(parsed)) {\n  // Claude sometimes returns a single object, wrap it in an array\n  parsed = [parsed];\n}\n\nreturn parsed.map(item => ({\n  json: {\n    type: item.type || 'Unknown',\n    description: item.description || 'No description',\n    severity: item.severity || item.priority || 'Unknown',\n    owner: item.owner || 'Unknown',\n    // Convert \"Unknown\" or invalid date strings to null\n    due_date: (item.due_date && item.due_date.toLowerCase() !== 'unknown') ? item.due_date : null,\n    // Keep any other fields Claude might add\n    ...item\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        -384
+      ],
+      "id": "ad49c0df-9639-44da-b14c-e5c951442755",
+      "name": "Code in JavaScript7",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -752,
+        -384
+      ],
+      "id": "79e80fba-21e0-42a4-8520-3d62ca6cb29e",
+      "name": "Loop Over Items2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me2",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        -176
+      ],
+      "id": "588e7a71-0fd0-4b80-89a3-b171108a57f0",
+      "placeholder": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\n\nconst meetingNotes = data.meetingNotes || 'No notes found';\nconst meetingName = $('Google Drive Trigger1').first().json.name || 'Meeting from Drive';\nconst meetingDate = new Date().toLocaleDateString();\n\nreturn [{\n  json: {\n    meetingName: meetingName,\n    claudeBody: {\n      model: 'claude-haiku-4-5',\n      max_tokens: 4000,\n      system: `You are a project management assistant. Read the meeting notes provided and extract every Risk, Action, Issue, and Decision. Return ONLY a valid JSON array. Each item must have exactly these fields: type (use only Risk or Action or Issue or Decision), description, owner, due_date, severity (use only High or Medium or Low). If a field is unknown write Unknown. Return nothing else. No explanation. No preamble. Just the array. Do not wrap your response in markdown code blocks. Return raw JSON only.`,\n      messages: [{\n        role: 'user',\n        content: 'Meeting: ' + meetingName + ' on ' + meetingDate + '. Notes: ' + meetingNotes\n      }]\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1584,
+        -384
+      ],
+      "id": "3509c830-576c-44ae-ae9e-49ec1a68bdb6",
+      "name": "Code in JavaScript8"
+    },
+    {
+      "parameters": {
+        "jsCode": "const content = items[0].json.content || 'No content found';\nconst docName = items[0].json.documentId || 'Meeting from Drive';\n\nreturn [{\n  json: {\n    meetingNotes: content,\n    meetingName: 'Meeting from Drive',\n    meetingDate: new Date().toLocaleDateString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1792,
+        -384
+      ],
+      "id": "cce3cef3-2d89-41e2-9556-79ab62d2fb03",
+      "name": "Code in JavaScript9"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "get",
+        "documentURL": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -2000,
+        -384
+      ],
+      "id": "8219199a-f6d5-47e6-92a5-d6b7503479c9",
+      "name": "Get a document1",
+      "credentials": {
+        "googleApi": {
+          "id": "NVuqUetmDzwOC4Os",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "865ea427-fec9-4675-97cf-d98c74c36593",
+              "leftValue": "={{ $json.severity }}",
+              "rightValue": "High",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -336,
+        -480
+      ],
+      "id": "a54bdac1-c4a6-49a5-8b53-594f67821c3c",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "tableId": "raid_items",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "type",
+              "fieldValue": "={{ $json.type }}"
+            },
+            {
+              "fieldId": "description",
+              "fieldValue": "={{ $json.description }}"
+            },
+            {
+              "fieldId": "severity",
+              "fieldValue": "={{ $json.severity }}"
+            },
+            {
+              "fieldId": "owner",
+              "fieldValue": "={{ $json.owner }}"
+            },
+            {
+              "fieldId": "due_date",
+              "fieldValue": "={{ $json.due_date && $json.due_date.toLowerCase() !== 'unknown' ? $json.due_date : null }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "Open"
+            },
+            {
+              "fieldId": "program_id",
+              "fieldValue": "={{ $('Code in JavaScript8').item.json.meetingName }}"
+            },
+            {
+              "fieldId": "source_meeting",
+              "fieldValue": "={{ $('Code in JavaScript9').item.json.meetingNotes }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        -384
+      ],
+      "id": "14eabf06-e7d4-44c0-9c4f-0653225b4773",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bpCwmayrX5uVwEJB",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "authentication": "serviceAccount",
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1cnw2cvoJEqRNLBi1Z5l80bgqpc4fPoc7",
+          "mode": "list",
+          "cachedResultName": "Meeting Notes — AI PM Tool",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1cnw2cvoJEqRNLBi1Z5l80bgqpc4fPoc7"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2208,
+        -384
+      ],
+      "id": "05b75b02-bb5c-4dc4-8a84-c04c50118bad",
+      "name": "Google Drive Trigger1",
+      "credentials": {
+        "googleApi": {
+          "id": "NVuqUetmDzwOC4Os",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ntfy.sh/your-private-topic",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "text/plain"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "Text (text/plain)",
+        "body": "=🚨 High Severity RAID Item Type: {{ $json.type }} Description: {{ $json.description }} Owner: {{ $json.owner }} Due: {{ $json.due_date }} Severity: {{ $json.severity }} Meeting: {{ $('Code in JavaScript9').item.json.meetingName }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -128,
+        -576
+      ],
+      "id": "af936a90-4448-4c12-b01a-80887282068f",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1984,
+        -624
+      ],
+      "id": "24e1a806-2af2-4bc3-800a-fcb3818644cc",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ntfy.sh/your-private-topic",
+        "sendBody": true,
+        "contentType": "raw",
+        "body": "=⚠️ Overdue RAID Item Type: {{ $json.type }} Description: {{ $json.description }} Owner: {{ $json.owner }} Due Date: {{ $json.due_date }} Status: {{ $json.status }} Program: {{ $json.program_id }}  Please update the status immediately.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -752,
+        -624
+      ],
+      "id": "b0430580-3ac4-488d-bd39-378adb3df6bd",
+      "name": "HTTP Request5"
+    },
+    {
+      "parameters": {
+        "jsCode": "const today = new Date().getDay(); // 0 = Sunday, 6 = Saturday\nif (today === 0 || today === 6) {\n  return [];   // stop on weekends\n} else {\n  return $input.all();\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1776,
+        -624
+      ],
+      "id": "27d5e92a-57c1-45ff-8085-2b3aac049a3f",
+      "name": "Weekend Gate code node"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -432,
+        -96
+      ],
+      "id": "da3e1e6b-a4b4-433f-8199-cd7607eb615d",
+      "name": "Loop Over Items3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1040,
+        -624
+      ],
+      "id": "416253b5-2629-4039-a79c-64f25ec52439",
+      "name": "Loop Over Items4"
+    },
+    {
+      "parameters": {
+        "url": "=https://your-project.supabase.co/rest/v1/raid_items?select=id,type,description,owner,due_date,severity,status,program_id&status=in.(Open,In Progress)&due_date=lt.{{ $today.format('yyyy-MM-dd') }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1568,
+        -624
+      ],
+      "id": "ae84ce36-ff23-441d-8581-f2dc8436e3d3",
+      "name": "HTTP Request (Supabase REST API – Get Overdue Items)",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "XWWgq3ntKuJJt0Xr",
+          "name": "Header Auth account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript5": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Feature 3 - AI Risk Flagging": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Feature 2 - Stakeholder Status update": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript6": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a document": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript7": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items2": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript8": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript9": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a document1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Get a document1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Weekend Gate code node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Weekend Gate code node": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request (Supabase REST API – Get Overdue Items)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items4": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        []
+      ]
+    },
+    "HTTP Request (Supabase REST API – Get Overdue Items)": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "9a632fa2-e234-4614-98ab-b75d6ecd6e86",
+  "meta": {
+    "instanceId": "7a1d6699f939842624544aae3d5f7afebded500a815a2152a2932f371301c5ba"
+  },
+  "id": "AIuVgQPZGbW5TdWH",
+  "tags": []
+}
